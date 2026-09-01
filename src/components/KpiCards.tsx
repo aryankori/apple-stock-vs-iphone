@@ -1,91 +1,114 @@
 import React from 'react';
 import { PortfolioSummary } from '../types';
 import { formatCurrency, formatPercentage } from '../utils/calculator';
-import { DollarSign, TrendingUp, Trophy, Layers, Percent, ArrowUpRight } from 'lucide-react';
+import { DollarSign, TrendingUp, Trophy, Layers } from 'lucide-react';
 
 interface KpiCardsProps {
   summary: PortfolioSummary;
+  theme?: 'green' | 'amber';
 }
 
-export const KpiCards: React.FC<KpiCardsProps> = ({ summary }) => {
+export const KpiCards: React.FC<KpiCardsProps> = ({ summary, theme = 'green' }) => {
+  const isGreen = theme === 'green';
+  const borderColor = isGreen ? 'border-[#1f521f]' : 'border-[#593c00]';
+  const primaryText = isGreen ? 'text-[#33ff00] terminal-glow' : 'text-[#ffb000] amber-glow';
+  const headerBg = isGreen ? 'bg-[#0f1a0f]' : 'bg-[#1a1400]';
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* Total Initial Hardware Spend */}
-      <div className="apple-card apple-card-hover p-5 rounded-2xl relative overflow-hidden group">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Hardware Cost</span>
-          <div className="p-2 rounded-xl bg-slate-800/80 text-slate-300">
-            <DollarSign className="w-4 h-4" />
-          </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      {/* 1. Total Hardware Cost */}
+      <div className={`terminal-box ${isGreen ? '' : 'terminal-box-amber'} border ${borderColor} p-0`}>
+        <div className={`flex items-center justify-between px-3 py-1.5 ${headerBg} border-b ${borderColor} text-[11px] font-mono`}>
+          <span className="font-bold text-slate-400">SYS_METRIC // 01</span>
+          <span className="text-slate-500 font-bold">[HARDWARE_CAPITAL]</span>
         </div>
-        <div className="mt-3">
-          <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <div className="p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>TOTAL IPHONE MSRP:</span>
+            <DollarSign className="w-3.5 h-3.5 text-slate-500" />
+          </div>
+          <div className="text-2xl font-black text-white mt-1 font-mono tracking-tight">
             {formatCurrency(summary.totalCost)}
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span>49 iPhone releases (2007–2026)</span>
-          </p>
-        </div>
-        <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition"></div>
-      </div>
-
-      {/* Current Invested Value */}
-      <div className="apple-card apple-card-hover p-5 rounded-2xl relative overflow-hidden group border-blue-500/30">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider">Invested Value Today</span>
-          <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400">
-            <TrendingUp className="w-4 h-4" />
+          <div className="mt-2 text-[11px] text-slate-500 font-mono">
+            &gt; 49 retail devices (2007-2026)
+          </div>
+          {/* ASCII progress bar */}
+          <div className="mt-2 text-[10px] text-slate-500 font-mono">
+            [||||||||||....................] 100% PRINCIPAL
           </div>
         </div>
-        <div className="mt-3">
-          <div className="text-2xl sm:text-3xl font-extrabold text-blue-400 tracking-tight">
+      </div>
+
+      {/* 2. Invested Value Today */}
+      <div className={`terminal-box ${isGreen ? '' : 'terminal-box-amber'} border ${borderColor} p-0`}>
+        <div className={`flex items-center justify-between px-3 py-1.5 ${headerBg} border-b ${borderColor} text-[11px] font-mono`}>
+          <span className={`font-bold ${primaryText}`}>SYS_METRIC // 02</span>
+          <span className={`font-bold ${primaryText}`}>[CURRENT_VALUE]</span>
+        </div>
+        <div className="p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>STOCK PORTFOLIO TODAY:</span>
+            <TrendingUp className={`w-3.5 h-3.5 ${primaryText}`} />
+          </div>
+          <div className={`text-2xl font-black ${primaryText} mt-1 font-mono tracking-tight`}>
             {formatCurrency(summary.totalInvestedValue)}
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <Layers className="w-3 h-3 text-blue-400" />
-            <span>{summary.totalShares.toFixed(2)} total shares acquired</span>
-          </p>
-        </div>
-        <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition"></div>
-      </div>
-
-      {/* Net Portfolio Profit */}
-      <div className="apple-card apple-card-hover p-5 rounded-2xl relative overflow-hidden group border-emerald-500/20">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Net Dollar Profit</span>
-          <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
-            <ArrowUpRight className="w-4 h-4" />
+          <div className="mt-2 text-[11px] text-slate-400 font-mono flex items-center gap-1">
+            <Layers className="w-3 h-3 text-[#33ff00]" />
+            <span>SHARES: {summary.totalShares.toFixed(2)} units</span>
+          </div>
+          {/* ASCII progress bar */}
+          <div className="mt-2 text-[10px] text-[#33ff00] font-mono">
+            [||||||||||||||||||||||||||||||] +603% COMPOUND
           </div>
         </div>
-        <div className="mt-3">
-          <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight">
+      </div>
+
+      {/* 3. Net Dollar Profit */}
+      <div className={`terminal-box ${isGreen ? '' : 'terminal-box-amber'} border ${borderColor} p-0`}>
+        <div className={`flex items-center justify-between px-3 py-1.5 ${headerBg} border-b ${borderColor} text-[11px] font-mono`}>
+          <span className="font-bold text-[#33ff00]">SYS_METRIC // 03</span>
+          <span className="text-[#33ff00] font-bold">[NET_ALPHA_GAIN]</span>
+        </div>
+        <div className="p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>NET CAPITAL GAIN:</span>
+            <span className="text-[10px] font-mono text-[#33ff00]">[PROFIT]</span>
+          </div>
+          <div className="text-2xl font-black text-[#33ff00] mt-1 font-mono tracking-tight terminal-glow">
             +{formatCurrency(summary.totalProfit)}
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Net cash gain after hardware principal
-          </p>
+          <div className="mt-2 text-[11px] text-slate-400 font-mono">
+            &gt; Value minus hardware principal
+          </div>
+          <div className="mt-2 text-[10px] text-[#33ff00]/70 font-mono">
+            [STATUS: NET POSITIVE RETURN]
+          </div>
         </div>
-        <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
       </div>
 
-      {/* Cumulative Return on Investment */}
-      <div className="apple-card apple-card-hover p-5 rounded-2xl relative overflow-hidden group border-indigo-500/20">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Cumulative ROI</span>
-          <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
-            <Percent className="w-4 h-4" />
-          </div>
+      {/* 4. Overall Cumulative ROI */}
+      <div className={`terminal-box ${isGreen ? '' : 'terminal-box-amber'} border ${borderColor} p-0`}>
+        <div className={`flex items-center justify-between px-3 py-1.5 ${headerBg} border-b ${borderColor} text-[11px] font-mono`}>
+          <span className="font-bold text-yellow-400">SYS_METRIC // 04</span>
+          <span className="text-yellow-400 font-bold">[ROI_RATIO]</span>
         </div>
-        <div className="mt-3">
-          <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <div className="p-4">
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>AGGREGATE ROI:</span>
+            <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+          </div>
+          <div className="text-2xl font-black text-white mt-1 font-mono tracking-tight">
             +{formatPercentage(summary.overallRoi)}
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-            <Trophy className="w-3 h-3 text-amber-400" />
-            <span>Top: {summary.bestPerformer.model} (+{formatPercentage(summary.bestPerformer.roi)})</span>
-          </p>
+          <div className="mt-2 text-[11px] text-slate-300 font-mono truncate">
+            &gt; TOP: {summary.bestPerformer.model} (+{formatPercentage(summary.bestPerformer.roi)})
+          </div>
+          <div className="mt-2 text-[10px] text-yellow-400 font-mono">
+            [MULTIPLE: {(summary.totalInvestedValue / (summary.totalCost || 1)).toFixed(2)}x INITIAL CAPITAL]
+          </div>
         </div>
-        <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl group-hover:bg-indigo-500/20 transition"></div>
       </div>
     </div>
   );

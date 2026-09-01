@@ -1,12 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { IPhoneCalculation } from '../types';
 import { formatCurrency, formatPercentage } from '../utils/calculator';
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, Download, Filter } from 'lucide-react';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Download } from 'lucide-react';
 
 interface IPhoneTableProps {
   models: IPhoneCalculation[];
   onSelectModel: (model: IPhoneCalculation) => void;
   selectedModelId: string;
+  theme?: 'green' | 'amber';
 }
 
 type SortField = 'model' | 'releaseDate' | 'modelPrice' | 'historicalStockPrice' | 'sharesPurchased' | 'investedValue' | 'profit' | 'roi';
@@ -15,19 +16,23 @@ export const IPhoneTable: React.FC<IPhoneTableProps> = ({
   models,
   onSelectModel,
   selectedModelId,
+  theme = 'green',
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGeneration, setSelectedGeneration] = useState('All');
   const [sortField, setSortField] = useState<SortField>('releaseDate');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
 
-  // Extract unique generations
+  const isGreen = theme === 'green';
+  const borderColor = isGreen ? 'border-[#1f521f]' : 'border-[#593c00]';
+  const primaryText = isGreen ? 'text-[#33ff00] terminal-glow' : 'text-[#ffb000] amber-glow';
+  const headerBg = isGreen ? 'bg-[#0f1a0f]' : 'bg-[#1a1400]';
+
   const generations = useMemo(() => {
     const unique = Array.from(new Set(models.map(m => m.generation)));
     return ['All', ...unique];
   }, [models]);
 
-  // Filter and sort models
   const filteredAndSortedModels = useMemo(() => {
     return models
       .filter(item => {
@@ -96,161 +101,159 @@ export const IPhoneTable: React.FC<IPhoneTableProps> = ({
   };
 
   return (
-    <div className="apple-card rounded-3xl p-6 sm:p-7 border border-white/10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
-        <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Complete iPhone Analysis Ledger</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Displaying all {filteredAndSortedModels.length} models with exact split-adjusted values.
-          </p>
+    <div className={`terminal-box ${isGreen ? '' : 'terminal-box-amber'} border ${borderColor}`}>
+      {/* Pane Header */}
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-3 px-3 py-2 ${headerBg} border-b ${borderColor} text-xs font-mono`}>
+        <div className="flex items-center gap-2">
+          <span className={`font-bold uppercase tracking-wider ${primaryText}`}>
+            +-- DATABASE // CANONICAL LEDGER [RECORDS: {filteredAndSortedModels.length}/49] --+
+          </span>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Search Input */}
-          <div className="relative min-w-[220px]">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Grep Search Bar */}
+          <div className="flex items-center border border-[#1f521f] bg-[#050505] px-2 py-1">
+            <Search className="w-3 h-3 text-slate-500 mr-1.5" />
+            <span className="text-slate-500 text-[11px] mr-1">grep:</span>
             <input
               type="text"
-              placeholder="Search model, year, price..."
+              placeholder="model/year..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#16161d] border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              className="bg-transparent text-white font-mono text-xs focus:outline-none w-28 sm:w-36 placeholder:text-slate-700"
             />
           </div>
 
-          {/* Export CSV */}
+          {/* Export CSV Button */}
           <button
             onClick={handleExportCsv}
-            className="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-slate-200 hover:text-white transition flex items-center gap-1.5"
+            className="terminal-btn flex items-center gap-1 text-[11px]"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <Download className="w-3 h-3" />
+            <span>[ EXPORT.CSV ]</span>
           </button>
         </div>
       </div>
 
       {/* Generation Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto py-4 border-b border-white/5 no-scrollbar">
-        <span className="text-xs text-slate-500 flex items-center gap-1 pl-1 pr-2 flex-shrink-0">
-          <Filter className="w-3 h-3" /> Filter:
-        </span>
+      <div className="px-3 py-2 bg-[#090909] border-b border-[#1f521f]/50 flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono">
+        <span className="text-slate-500 flex-shrink-0">FLAGS:</span>
         {generations.map(gen => (
           <button
             key={gen}
             onClick={() => setSelectedGeneration(gen)}
-            className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition ${
+            className={`px-2 py-0.5 whitespace-nowrap transition uppercase ${
               selectedGeneration === gen
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-semibold'
-                : 'bg-white/[0.04] text-slate-400 hover:text-slate-200 hover:bg-white/[0.08]'
+                ? 'bg-[#33ff00] text-black font-bold'
+                : 'text-slate-400 hover:text-white border border-[#1f521f]'
             }`}
           >
-            {gen}
+            --{gen.toLowerCase().replace(/[^a-z0-9]/g, '-')}
           </button>
         ))}
       </div>
 
-      {/* Table Container */}
-      <div className="overflow-x-auto mt-4">
-        <table className="w-full text-left border-collapse">
+      {/* Monospace Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left font-mono text-xs border-collapse">
           <thead>
-            <tr className="border-b border-white/10 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              <th className="py-3 px-4 cursor-pointer hover:text-white transition" onClick={() => handleSort('model')}>
-                <div className="flex items-center gap-1.5">
-                  <span>Model</span>
-                  {sortField === 'model' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+            <tr className="bg-[#0f140f] border-b border-[#1f521f] text-[11px] text-slate-400 uppercase">
+              <th className="py-2.5 px-3 cursor-pointer hover:text-white transition" onClick={() => handleSort('model')}>
+                <div className="flex items-center gap-1">
+                  <span>MODEL</span>
+                  {sortField === 'model' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 cursor-pointer hover:text-white transition" onClick={() => handleSort('releaseDate')}>
-                <div className="flex items-center gap-1.5">
-                  <span>Release Date</span>
-                  {sortField === 'releaseDate' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+              <th className="py-2.5 px-3 cursor-pointer hover:text-white transition" onClick={() => handleSort('releaseDate')}>
+                <div className="flex items-center gap-1">
+                  <span>LAUNCH_DATE</span>
+                  {sortField === 'releaseDate' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('modelPrice')}>
-                <div className="flex items-center justify-end gap-1.5">
+              <th className="py-2.5 px-3 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('modelPrice')}>
+                <div className="flex items-center justify-end gap-1">
                   <span>MSRP</span>
-                  {sortField === 'modelPrice' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+                  {sortField === 'modelPrice' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('historicalStockPrice')}>
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>AAPL at Launch</span>
-                  {sortField === 'historicalStockPrice' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+              <th className="py-2.5 px-3 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('historicalStockPrice')}>
+                <div className="flex items-center justify-end gap-1">
+                  <span>AAPL_LAUNCH</span>
+                  {sortField === 'historicalStockPrice' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('sharesPurchased')}>
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>Shares</span>
-                  {sortField === 'sharesPurchased' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+              <th className="py-2.5 px-3 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('sharesPurchased')}>
+                <div className="flex items-center justify-end gap-1">
+                  <span>SHARES</span>
+                  {sortField === 'sharesPurchased' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('investedValue')}>
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>Value Today</span>
-                  {sortField === 'investedValue' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+              <th className="py-2.5 px-3 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('investedValue')}>
+                <div className="flex items-center justify-end gap-1">
+                  <span>EQUITY_VAL</span>
+                  {sortField === 'investedValue' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('profit')}>
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>Net Profit</span>
-                  {sortField === 'profit' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+              <th className="py-2.5 px-3 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('profit')}>
+                <div className="flex items-center justify-end gap-1">
+                  <span>GAIN</span>
+                  {sortField === 'profit' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('roi')}>
-                <div className="flex items-center justify-end gap-1.5">
+              <th className="py-2.5 px-3 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('roi')}>
+                <div className="flex items-center justify-end gap-1">
                   <span>ROI (%)</span>
-                  {sortField === 'roi' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
+                  {sortField === 'roi' ? (sortAsc ? <ArrowUp className="w-3 h-3 text-[#33ff00]" /> : <ArrowDown className="w-3 h-3 text-[#33ff00]" />) : <ArrowUpDown className="w-3 h-3 opacity-30" />}
                 </div>
               </th>
-              <th className="py-3 px-4 text-center">Action</th>
+              <th className="py-2.5 px-3 text-center">CMD</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 text-xs">
+          <tbody className="divide-y divide-[#1f521f]/40 text-xs font-mono">
             {filteredAndSortedModels.map((item) => {
               const isSelected = item.id === selectedModelId;
               return (
                 <tr
                   key={item.id}
-                  className={`hover:bg-white/[0.04] transition group ${
-                    isSelected ? 'bg-blue-600/10' : ''
+                  className={`hover:bg-[#152a15]/60 transition ${
+                    isSelected ? 'bg-[#153515] text-[#33ff00]' : ''
                   }`}
                 >
-                  <td className="py-3.5 px-4 font-semibold text-white flex items-center gap-2">
-                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
+                  <td className="py-2 px-3 font-bold text-white flex items-center gap-1.5">
+                    <span className="text-slate-600">[{item.id.padStart(2, '0')}]</span>
                     <span>{item.model}</span>
                   </td>
-                  <td className="py-3.5 px-4 text-slate-400 font-mono">
+                  <td className="py-2 px-3 text-slate-400">
                     {item.releaseDate}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-medium text-slate-300">
+                  <td className="py-2 px-3 text-right text-slate-300">
                     {formatCurrency(item.modelPrice)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-medium text-slate-400">
+                  <td className="py-2 px-3 text-right text-slate-400">
                     ${item.historicalStockPrice.toFixed(2)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-mono text-slate-300">
+                  <td className="py-2 px-3 text-right text-slate-300">
                     {item.sharesPurchased.toFixed(2)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-bold text-blue-400">
+                  <td className="py-2 px-3 text-right font-bold text-[#33ff00]">
                     {formatCurrency(item.investedValue)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-semibold text-emerald-400">
+                  <td className="py-2 px-3 text-right text-[#33ff00]">
                     +{formatCurrency(item.profit)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-bold text-emerald-400">
+                  <td className="py-2 px-3 text-right font-bold text-[#33ff00]">
                     +{formatPercentage(item.roi)}
                   </td>
-                  <td className="py-3.5 px-4 text-center">
+                  <td className="py-2 px-3 text-center">
                     <button
                       onClick={() => onSelectModel(item)}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition ${
+                      className={`px-2 py-0.5 text-[10px] font-bold uppercase transition ${
                         isSelected
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white'
+                          ? 'bg-[#33ff00] text-black'
+                          : 'border border-[#1f521f] text-slate-300 hover:bg-[#33ff00] hover:text-black'
                       }`}
                     >
-                      {isSelected ? 'Active' : 'Simulate'}
+                      {isSelected ? '[ACTIVE]' : '[LOAD]'}
                     </button>
                   </td>
                 </tr>

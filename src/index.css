@@ -3,63 +3,133 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    border-radius: 0px !important;
+  }
+  
   body {
-    background-color: #08080b;
-    color: #f8fafc;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Inter", sans-serif;
+    background-color: #0a0a0a;
+    color: #33ff00;
+    font-family: 'JetBrains Mono', 'Fira Code', 'VT323', Consolas, monospace;
+    letter-spacing: -0.01em;
   }
 }
 
-/* Glassmorphic card styling */
-.apple-card {
-  background: rgba(20, 20, 26, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* CRT Scanlines Overlay */
+.crt-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.4) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
 }
 
-.apple-card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+/* Phosphor Glow Effect */
+.terminal-glow {
+  text-shadow: 0 0 6px rgba(51, 255, 0, 0.65), 0 0 12px rgba(51, 255, 0, 0.25);
 }
 
-.apple-card-hover:hover {
-  background: rgba(28, 28, 36, 0.9);
-  border-color: rgba(0, 113, 227, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(0, 113, 227, 0.15);
+.amber-glow {
+  text-shadow: 0 0 6px rgba(255, 176, 0, 0.65), 0 0 12px rgba(255, 176, 0, 0.25);
 }
 
-/* Custom scrollbar */
+.red-glow {
+  text-shadow: 0 0 6px rgba(255, 51, 51, 0.65), 0 0 12px rgba(255, 51, 51, 0.25);
+}
+
+/* Terminal Box / Window Styles */
+.terminal-box {
+  background-color: #0d0d0d;
+  border: 1px solid #1f521f;
+  box-shadow: inset 0 0 12px rgba(0, 50, 0, 0.2);
+}
+
+.terminal-box-amber {
+  background-color: #0d0d0d;
+  border: 1px solid #593c00;
+  box-shadow: inset 0 0 12px rgba(50, 30, 0, 0.2);
+}
+
+.terminal-box-header {
+  background-color: #121212;
+  border-bottom: 1px solid #1f521f;
+  color: #33ff00;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Inverted Button Styles */
+.terminal-btn {
+  background-color: transparent;
+  color: #33ff00;
+  border: 1px solid #1f521f;
+  padding: 0.35rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+
+.terminal-btn:hover {
+  background-color: #33ff00;
+  color: #0a0a0a;
+  box-shadow: 0 0 10px rgba(51, 255, 0, 0.5);
+}
+
+.terminal-btn:active {
+  transform: translateY(1px);
+}
+
+.terminal-btn-amber {
+  color: #ffb000;
+  border-color: #593c00;
+}
+
+.terminal-btn-amber:hover {
+  background-color: #ffb000;
+  color: #0a0a0a;
+  box-shadow: 0 0 10px rgba(255, 176, 0, 0.5);
+}
+
+/* Blinking Cursor */
+.terminal-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  vertical-align: -0.15em;
+  background-color: #33ff00;
+  animation: blink 1s step-start infinite;
+}
+
+.terminal-cursor-amber {
+  background-color: #ffb000;
+}
+
+/* Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d0d12;
+  background: #080808;
+  border: 1px solid #153015;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272730;
-  border-radius: 4px;
+  background: #1f521f;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f4e;
-}
-
-/* Shimmer animation */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer-text {
-  background: linear-gradient(90deg, #f8fafc 0%, #93c5fd 50%, #f8fafc 100%);
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shimmer 4s linear infinite;
+  background: #33ff00;
 }

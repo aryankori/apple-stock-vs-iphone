@@ -8,29 +8,56 @@ export default {
   theme: {
     extend: {
       colors: {
-        apple: {
-          dark: '#0a0a0c',
-          card: '#141418',
-          cardHover: '#1c1c22',
-          border: '#272730',
-          accent: '#0071e3',
-          accentGlow: '#0077ED',
-          emerald: '#10b981',
-          rose: '#f43f5e',
-          textMuted: '#94a3b8'
+        terminal: {
+          bg: '#0a0a0a',
+          surface: '#0f0f0f',
+          pane: '#121212',
+          green: '#33ff00',
+          'green-glow': '#44ff11',
+          'green-dim': '#1f521f',
+          'green-dark': '#0a1a0a',
+          amber: '#ffb000',
+          'amber-dim': '#593c00',
+          'amber-dark': '#1c1400',
+          red: '#ff3333',
+          'red-dim': '#4d1010',
+          cyan: '#00d4ff',
+          muted: '#4a7c4a',
+          border: '#1f521f'
         }
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', '"Fira Code"', '"VT323"', 'Consolas', 'Courier New', 'monospace'],
+        sans: ['"JetBrains Mono"', 'monospace'],
+      },
+      borderRadius: {
+        DEFAULT: '0px',
+        sm: '0px',
+        md: '0px',
+        lg: '0px',
+        xl: '0px',
+        '2xl': '0px',
+        '3xl': '0px',
+        full: '0px',
       },
       animation: {
-        'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'blink': 'blink 1s step-start infinite',
+        'flicker': 'flicker 0.15s infinite',
+        'scanline': 'scanline 8s linear infinite',
       },
       keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(6px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+        blink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
+        flicker: {
+          '0%': { opacity: '0.98' },
+          '50%': { opacity: '1' },
+          '100%': { opacity: '0.99' },
+        },
+        scanline: {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(100%)' },
         }
       }
     },
