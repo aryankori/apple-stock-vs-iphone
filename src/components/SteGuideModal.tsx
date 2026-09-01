@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Terminal } from 'lucide-react';
+import { X, CheckCircle2, FileSpreadsheet, ShieldAlert, Cpu } from 'lucide-react';
 
 interface SteGuideModalProps {
   isOpen: boolean;
@@ -10,83 +10,91 @@ export const SteGuideModal: React.FC<SteGuideModalProps> = ({ isOpen, onClose })
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 animate-fade-in font-mono">
-      <div className="terminal-box max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-[#33ff00] shadow-[0_0_25px_rgba(51,255,0,0.2)]">
-        {/* Terminal Manual Header */}
-        <div className="flex items-center justify-between px-3 py-1.5 bg-[#0f1f0f] border-b border-[#1f521f] text-xs">
-          <div className="flex items-center gap-2">
-            <Terminal className="w-3.5 h-3.5 text-[#33ff00]" />
-            <span className="font-bold text-[#33ff00] uppercase tracking-wider">
-              MAN(1) MANUAL PAGE // AAPL-MODEL(1)
-            </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+      <div className="apple-card max-w-3xl w-full max-h-[85vh] overflow-y-auto rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400">
+              <Cpu className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white tracking-tight">Technical Guide (ASD-STE100)</h3>
+              <p className="text-xs text-slate-400">Simplified Technical English Documentation</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white hover:bg-[#1f521f] transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Manual Page Content (ASD-STE100) */}
-        <div className="p-5 sm:p-6 space-y-6 text-xs text-slate-300 leading-relaxed font-mono">
+        {/* Content Sections */}
+        <div className="mt-6 space-y-6 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+          {/* Section 1: Purpose */}
           <div>
-            <h4 className="text-yellow-400 font-bold uppercase mb-1">NAME</h4>
-            <p className="pl-4 text-white">aapl-model — Calculate Apple stock investment returns vs iPhone hardware purchases</p>
-          </div>
-
-          <div>
-            <h4 className="text-yellow-400 font-bold uppercase mb-1">SYNOPSIS</h4>
-            <p className="pl-4 text-[#33ff00] font-bold">aapl-model [--model=ID] [--amount=USD] [--price=USD] [--realtime]</p>
-          </div>
-
-          <div>
-            <h4 className="text-yellow-400 font-bold uppercase mb-1">DESCRIPTION</h4>
-            <p className="pl-4 text-slate-300">
-              This program calculates the financial return of Apple stock (AAPL). It compares the purchase price of each iPhone model to an equal investment in Apple stock on the release date. All text follows the ASD-STE100 specification.
+            <h4 className="font-bold text-white text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-blue-400" />
+              1. Purpose of the System
+            </h4>
+            <p className="text-slate-300">
+              This system calculates the financial return of Apple stock (AAPL). It compares the purchase price of each iPhone model to an equal investment in Apple stock on the release date.
             </p>
           </div>
 
+          {/* Section 2: Mathematical Equations */}
           <div>
-            <h4 className="text-yellow-400 font-bold uppercase mb-1">CALCULATION INVARIANTS</h4>
-            <div className="pl-4 space-y-1 text-slate-200 bg-[#080808] p-3 border border-[#1f521f]">
-              <div>&gt; Shares Acquired  = Model MSRP / Historical AAPL Price</div>
-              <div>&gt; Invested Value   = Shares Acquired * Current AAPL Price</div>
-              <div>&gt; Net Profit       = Invested Value - Model MSRP</div>
-              <div>&gt; Cumulative ROI   = (Invested Value / Model MSRP) - 1.00</div>
+            <h4 className="font-bold text-white text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              2. Calculation Equations
+            </h4>
+            <div className="p-4 rounded-xl bg-black/50 border border-white/10 font-mono text-xs text-slate-200 space-y-2">
+              <div><span className="text-slate-400">Shares Acquired</span> = Model MSRP / Historical AAPL Price</div>
+              <div><span className="text-blue-400">Invested Value</span> = Shares Acquired × Current AAPL Price</div>
+              <div><span className="text-emerald-400">Net Dollar Profit</span> = Invested Value - Model MSRP</div>
+              <div><span className="text-purple-400">Return on Investment (ROI)</span> = (Invested Value / Model MSRP) - 1</div>
             </div>
           </div>
 
+          {/* Section 3: Stock Split Adjustments */}
           <div>
-            <h4 className="text-yellow-400 font-bold uppercase mb-1">STOCK SPLIT ADJUSTMENTS</h4>
-            <p className="pl-4 text-slate-300">
+            <h4 className="font-bold text-white text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-amber-400" />
+              3. Stock Split Adjustments
+            </h4>
+            <p className="text-slate-300">
               Historical prices use split adjustments. Apple completed two major stock splits during the iPhone timeline:
             </p>
-            <div className="pl-6 mt-1 space-y-1 text-slate-400">
-              <div>- June 09, 2014: 7-for-1 stock split.</div>
-              <div>- August 28, 2020: 4-for-1 stock split.</div>
-            </div>
-            <p className="pl-4 mt-2 text-slate-300">
-              Split adjustments make share quantities and prices mathematically consistent across all 49 rows.
+            <ul className="list-disc pl-5 mt-2 space-y-1 text-slate-400">
+              <li>A 7-for-1 stock split occurred on June 9, 2014.</li>
+              <li>A 4-for-1 stock split occurred on August 28, 2020.</li>
+            </ul>
+            <p className="mt-2 text-slate-300">
+              Split adjustments make share quantities and prices mathematically consistent across all years.
             </p>
           </div>
 
+          {/* Section 4: Data Feeds & Real-Time Sync */}
           <div>
-            <h4 className="text-yellow-400 font-bold uppercase mb-1">EXCEL COMPATIBILITY & REAL-TIME SYNC</h4>
-            <p className="pl-4 text-slate-300">
-              The web interface queries financial market APIs for real-time AAPL prices. The downloadable Excel workbook contains native fallback formulas to ensure offline calculation integrity.
+            <h4 className="font-bold text-white text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-indigo-400" />
+              4. Real-Time Data and Excel Compatibility
+            </h4>
+            <p className="text-slate-300">
+              The web interface queries financial market APIs for real-time AAPL prices. If the user downloads the Excel workbook, the file contains compatibility formulas with verified offline fallback values.
             </p>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-3 bg-[#0a0a0a] border-t border-[#1f521f] flex items-center justify-between text-xs">
-          <span className="text-slate-500 font-mono">PAGER: END // PRESS ESC OR CLICK CLOSE</span>
+        {/* Modal Footer */}
+        <div className="mt-8 pt-4 border-t border-white/10 flex justify-end">
           <button
             onClick={onClose}
-            className="terminal-btn px-4 py-1"
+            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition"
           >
-            [ CLOSE / QUIT ]
+            Close Guide
           </button>
         </div>
       </div>

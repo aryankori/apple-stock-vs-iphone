@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IPhoneCalculation } from '../types';
 import { formatCurrency, formatPercentage } from '../utils/calculator';
-import { Terminal, Cpu, Play } from 'lucide-react';
+import { Calculator, Sparkles, DollarSign, Calendar, TrendingUp, Layers, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface SimulatorProps {
@@ -9,7 +9,6 @@ interface SimulatorProps {
   selectedModel: IPhoneCalculation;
   onSelectModel: (model: IPhoneCalculation) => void;
   currentStockPrice: number;
-  theme?: 'green' | 'amber';
 }
 
 export const Simulator: React.FC<SimulatorProps> = ({
@@ -17,16 +16,11 @@ export const Simulator: React.FC<SimulatorProps> = ({
   selectedModel,
   onSelectModel,
   currentStockPrice,
-  theme = 'green',
 }) => {
   const [customAmount, setCustomAmount] = useState<number>(selectedModel.modelPrice);
   const [customStockPrice, setCustomStockPrice] = useState<number>(currentStockPrice);
 
-  const isGreen = theme === 'green';
-  const borderColor = isGreen ? 'border-[#1f521f]' : 'border-[#593c00]';
-  const primaryText = isGreen ? 'text-[#33ff00] terminal-glow' : 'text-[#ffb000] amber-glow';
-  const headerBg = isGreen ? 'bg-[#0f1a0f]' : 'bg-[#1a1400]';
-
+  // Sync custom amount when selectedModel changes
   const handleModelChange = (modelId: string) => {
     const found = models.find(m => m.id === modelId);
     if (found) {
@@ -35,6 +29,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
     }
   };
 
+  // Calculations based on custom inputs
   const simulatedShares = selectedModel.historicalStockPrice > 0 ? customAmount / selectedModel.historicalStockPrice : 0;
   const simulatedValue = simulatedShares * customStockPrice;
   const simulatedProfit = simulatedValue - customAmount;
@@ -42,221 +37,216 @@ export const Simulator: React.FC<SimulatorProps> = ({
 
   const triggerCelebration = () => {
     confetti({
-      particleCount: 40,
-      spread: 50,
-      origin: { y: 0.7 },
-      colors: ['#33ff00', '#ffb000', '#ffffff', '#00d4ff']
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.8 },
+      colors: ['#0071e3', '#10b981', '#6366f1', '#f59e0b']
     });
   };
 
-  // Generate ASCII Bar representation
-  const generateAsciiBar = (val: number, cost: number) => {
-    const totalSlots = 30;
-    if (val <= 0 || cost <= 0) return '[..............................]';
-    const costRatio = Math.min(1, cost / val);
-    const costSlots = Math.max(1, Math.round(costRatio * totalSlots));
-    const gainSlots = Math.max(0, totalSlots - costSlots);
-    return `[${'#'.repeat(costSlots)}${'|'.repeat(gainSlots)}]`;
-  };
-
   return (
-    <div className={`terminal-box ${isGreen ? '' : 'terminal-box-amber'} border ${borderColor}`}>
-      {/* Pane Header */}
-      <div className={`flex flex-wrap items-center justify-between px-3 py-1.5 ${headerBg} border-b ${borderColor} text-xs font-mono`}>
-        <div className="flex items-center gap-2">
-          <Cpu className={`w-3.5 h-3.5 ${primaryText}`} />
-          <span className={`font-bold uppercase tracking-wider ${primaryText}`}>
-            +-- SIMULATOR // CAPITAL ALLOCATION ENGINE --+
-          </span>
+    <div className="apple-card p-6 sm:p-7 rounded-3xl relative overflow-hidden border border-white/10">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-6 border-b border-white/10">
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400">
+              <Calculator className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold text-white tracking-tight">Interactive Investment Simulator</h2>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            Calculate the exact return for any iPhone model or custom investment amount.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-500 font-mono">MATH_INVARIANT: V_t = (P_0 / S_0) * S_t</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#1f521f]/50 text-[#33ff00]">
-            [ENGINE:ACTIVE]
-          </span>
+
+        {/* Preset quick target prices */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-slate-400 font-medium">Simulate AAPL Price:</span>
+          {[300, 325, 350, 400, 500].map(price => (
+            <button
+              key={price}
+              onClick={() => {
+                setCustomStockPrice(price);
+                if (price >= 400) triggerCelebration();
+              }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                customStockPrice === price
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-300'
+              }`}
+            >
+              ${price}
+            </button>
+          ))}
+          <button
+            onClick={() => setCustomStockPrice(currentStockPrice)}
+            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition border border-emerald-500/30"
+          >
+            Live (${currentStockPrice.toFixed(2)})
+          </button>
         </div>
       </div>
 
-      {/* Pane Body */}
-      <div className="p-4 sm:p-6 space-y-6">
-        {/* Preset Target Stock Price Buttons */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#1f521f]/50 font-mono text-xs">
-          <div className="flex items-center gap-2 text-slate-400">
-            <Terminal className="w-3.5 h-3.5 text-[#33ff00]" />
-            <span>SELECT $AAPL TARGET SCENARIO:</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {[300, 325, 350, 400, 500].map(price => (
-              <button
-                key={price}
-                onClick={() => {
-                  setCustomStockPrice(price);
-                  if (price >= 400) triggerCelebration();
-                }}
-                className={`px-2.5 py-1 text-xs font-mono font-bold uppercase transition ${
-                  customStockPrice === price
-                    ? 'bg-[#33ff00] text-black'
-                    : 'border border-[#1f521f] text-slate-300 hover:bg-[#1f521f]/40 hover:text-white'
-                }`}
-              >
-                [ ${price}.00 ]
-              </button>
-            ))}
-            <button
-              onClick={() => setCustomStockPrice(currentStockPrice)}
-              className="px-2.5 py-1 text-xs font-mono font-bold uppercase border border-[#33ff00] text-[#33ff00] hover:bg-[#33ff00] hover:text-black transition"
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        {/* Left Inputs Column */}
+        <div className="lg:col-span-5 space-y-4">
+          {/* Select iPhone Model */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              Select iPhone Model
+            </label>
+            <select
+              value={selectedModel.id}
+              onChange={(e) => handleModelChange(e.target.value)}
+              aria-label="Select iPhone Model"
+              className="w-full bg-[#16161d] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500 transition"
             >
-              [ LIVE: ${currentStockPrice.toFixed(2)} ]
-            </button>
+              {models.map(m => (
+                <option key={m.id} value={m.id} className="bg-[#16161d] text-white">
+                  {m.model} ({m.releaseDate.split('-')[0]}) — MSRP: ${m.modelPrice}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Model Launch Details */}
+          <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/5 text-xs">
+            <div>
+              <span className="text-slate-500 flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> Launch Date
+              </span>
+              <p className="font-semibold text-slate-200 mt-0.5">{selectedModel.releaseDate}</p>
+            </div>
+            <div>
+              <span className="text-slate-500 flex items-center gap-1">
+                <DollarSign className="w-3 h-3" /> Split-Adjusted AAPL Price
+              </span>
+              <p className="font-semibold text-slate-200 mt-0.5">${selectedModel.historicalStockPrice.toFixed(2)}</p>
+            </div>
+          </div>
+
+          {/* Custom Investment Amount Input */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                Investment Capital
+              </label>
+              <button
+                onClick={() => setCustomAmount(selectedModel.modelPrice)}
+                className="text-[11px] text-blue-400 hover:text-blue-300 transition underline"
+              >
+                Reset to MSRP (${selectedModel.modelPrice})
+              </button>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-semibold text-sm">
+                $
+              </div>
+              <input
+                type="number"
+                min={1}
+                max={1000000}
+                value={customAmount}
+                onChange={(e) => setCustomAmount(Math.max(1, Number(e.target.value) || 0))}
+                className="w-full bg-[#16161d] border border-white/10 rounded-xl pl-8 pr-4 py-2.5 text-sm text-white font-semibold focus:outline-none focus:border-blue-500 transition"
+              />
+            </div>
+          </div>
+
+          {/* Custom AAPL Target Price Slider */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                AAPL Target Price
+              </label>
+              <span className="text-xs font-bold text-blue-400">${customStockPrice.toFixed(2)}</span>
+            </div>
+            <input
+              type="range"
+              min={50}
+              max={600}
+              step={1}
+              value={customStockPrice}
+              onChange={(e) => setCustomStockPrice(Number(e.target.value))}
+              className="w-full accent-blue-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Controls Column */}
-          <div className="lg:col-span-5 space-y-4 font-mono">
-            {/* Model Selector Dropdown */}
-            <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                // 01. TARGET IPHONE HARDWARE MODEL
-              </label>
-              <select
-                value={selectedModel.id}
-                onChange={(e) => handleModelChange(e.target.value)}
-                aria-label="Target iPhone Model"
-                className="w-full bg-[#0a0a0a] border border-[#1f521f] text-white text-xs font-mono px-3 py-2 focus:outline-none focus:border-[#33ff00] transition"
-              >
-                {models.map(m => (
-                  <option key={m.id} value={m.id} className="bg-[#0a0a0a] text-white font-mono">
-                    [{m.id.padStart(2, '0')}] {m.model} ({m.releaseDate.split('-')[0]}) — MSRP: ${m.modelPrice}
-                  </option>
-                ))}
-              </select>
+        {/* Right Output Results Column */}
+        <div className="lg:col-span-7 flex flex-col justify-between bg-gradient-to-br from-blue-950/30 via-slate-900/60 to-purple-950/20 border border-blue-500/20 rounded-2xl p-5 sm:p-6">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="px-2.5 py-1 text-xs font-bold bg-blue-500/20 text-blue-300 rounded-lg border border-blue-500/30 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> Simulation Outcome
+              </span>
+              <span className="text-xs text-slate-400">
+                Formula: (Capital / Launch Stock Price) × Target Price
+              </span>
             </div>
 
-            {/* Launch Telemetry */}
-            <div className="grid grid-cols-2 gap-2 p-3 bg-[#080808] border border-[#1f521f] text-xs">
-              <div>
-                <span className="text-slate-500 block text-[10px] uppercase">LAUNCH DATE:</span>
-                <span className="text-white font-bold">{selectedModel.releaseDate}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
+              <div className="p-3.5 rounded-xl bg-black/40 border border-white/5">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Shares Bought</span>
+                <div className="text-xl font-bold text-white mt-1 flex items-center gap-1">
+                  <Layers className="w-4 h-4 text-blue-400" />
+                  <span>{simulatedShares.toFixed(2)}</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 block">at ${selectedModel.historicalStockPrice.toFixed(2)}/share</span>
               </div>
-              <div>
-                <span className="text-slate-500 block text-[10px] uppercase">SPLIT-ADJ AAPL:</span>
-                <span className="text-[#33ff00] font-bold">${selectedModel.historicalStockPrice.toFixed(2)}</span>
+
+              <div className="p-3.5 rounded-xl bg-black/40 border border-white/5">
+                <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">Portfolio Value</span>
+                <div className="text-xl font-bold text-blue-400 mt-1">
+                  {formatCurrency(simulatedValue)}
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 block">at ${customStockPrice.toFixed(2)}/share</span>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-black/40 border border-white/5">
+                <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Net Return (ROI)</span>
+                <div className="text-xl font-bold text-emerald-400 mt-1 flex items-center gap-0.5">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>+{formatPercentage(simulatedRoi)}</span>
+                </div>
+                <span className="text-[10px] text-emerald-500/80 mt-1 block">+{formatCurrency(simulatedProfit)} gain</span>
               </div>
             </div>
 
-            {/* Capital Input */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5 text-xs">
-                <label className="font-bold text-slate-300 uppercase">
-                  // 02. CAPITAL ALLOCATION ($ USD)
-                </label>
-                <button
-                  onClick={() => setCustomAmount(selectedModel.modelPrice)}
-                  className="text-[11px] text-[#33ff00] underline hover:text-white transition"
-                >
-                  [ RESET: ${selectedModel.modelPrice} ]
-                </button>
+            {/* Comparison Visualizer */}
+            <div className="mt-5 p-4 rounded-xl bg-black/50 border border-white/5">
+              <div className="flex items-center justify-between text-xs font-semibold mb-2">
+                <span className="text-slate-400">Hardware vs Stock Value</span>
+                <span className="text-blue-400 font-bold">{(simulatedValue / (customAmount || 1)).toFixed(1)}x Growth</span>
               </div>
-              <div className="flex items-center border border-[#1f521f] bg-[#0a0a0a] px-3 py-1.5">
-                <span className="text-slate-500 font-bold mr-2">$</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={1000000}
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(Math.max(1, Number(e.target.value) || 0))}
-                  className="w-full bg-transparent text-white font-mono text-xs font-bold focus:outline-none"
+              <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
+                <div
+                  className="h-full bg-slate-600"
+                  style={{ width: `${Math.min(100, (customAmount / simulatedValue) * 100)}%` }}
+                  title="Original Hardware Cost"
+                />
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 transition-all duration-300"
+                  style={{ width: `${Math.max(0, 100 - (customAmount / simulatedValue) * 100)}%` }}
+                  title="Stock Capital Gain"
                 />
               </div>
-            </div>
-
-            {/* Target Price Slider */}
-            <div>
-              <div className="flex items-center justify-between mb-1 text-xs">
-                <label className="font-bold text-slate-300 uppercase">
-                  // 03. AAPL PRICE TARGET SLIDER
-                </label>
-                <span className="text-[#33ff00] font-bold">${customStockPrice.toFixed(2)}</span>
-              </div>
-              <input
-                type="range"
-                min={50}
-                max={600}
-                step={1}
-                value={customStockPrice}
-                onChange={(e) => setCustomStockPrice(Number(e.target.value))}
-                className="w-full accent-[#33ff00] h-1.5 bg-[#152515] cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-slate-500 mt-1">
-                <span>$50.00</span>
-                <span>$300.00</span>
-                <span>$600.00</span>
+              <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-slate-500 inline-block"></span>
+                  Hardware Cost: {formatCurrency(customAmount)}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                  Stock Gain: +{formatCurrency(simulatedProfit)}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Telemetry Output Column */}
-          <div className="lg:col-span-7 bg-[#080808] border border-[#1f521f] p-4 sm:p-5 flex flex-col justify-between font-mono">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[#1f521f] text-xs">
-                <span className="font-bold text-[#33ff00] flex items-center gap-1.5">
-                  <Play className="w-3 h-3 text-[#33ff00] fill-current" />
-                  <span>SIMULATION EXECUTION TELEMETRY</span>
-                </span>
-                <span className="text-[11px] text-slate-400">
-                  {selectedModel.model} @ ${customStockPrice.toFixed(2)}
-                </span>
-              </div>
-
-              {/* 3 Metric Blocks */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-4">
-                <div className="p-3 bg-[#0d0d0d] border border-[#1f521f]">
-                  <span className="text-[10px] text-slate-500 uppercase block font-bold">SHARES ACQUIRED</span>
-                  <div className="text-lg font-black text-white mt-1">
-                    {simulatedShares.toFixed(2)}
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-0.5 block">units @ ${selectedModel.historicalStockPrice.toFixed(2)}</span>
-                </div>
-
-                <div className="p-3 bg-[#0d0d0d] border border-[#1f521f]">
-                  <span className="text-[10px] text-slate-500 uppercase block font-bold">PORTFOLIO VALUATION</span>
-                  <div className="text-lg font-black text-[#33ff00] mt-1 terminal-glow">
-                    {formatCurrency(simulatedValue)}
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-0.5 block">at ${customStockPrice.toFixed(2)}/share</span>
-                </div>
-
-                <div className="p-3 bg-[#0d0d0d] border border-[#1f521f]">
-                  <span className="text-[10px] text-slate-500 uppercase block font-bold">NET PROFIT & ROI</span>
-                  <div className="text-lg font-black text-white mt-1">
-                    +{formatPercentage(simulatedRoi)}
-                  </div>
-                  <span className="text-[10px] text-[#33ff00] mt-0.5 block">+{formatCurrency(simulatedProfit)}</span>
-                </div>
-              </div>
-
-              {/* ASCII Visualization */}
-              <div className="mt-4 p-3 bg-[#050505] border border-[#1f521f]">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-slate-400 font-bold">CAPITAL RATIO VISUALIZER:</span>
-                  <span className="text-[#33ff00] font-bold">
-                    {(simulatedValue / (customAmount || 1)).toFixed(2)}x MULTIPLE
-                  </span>
-                </div>
-                <div className="text-xs text-[#33ff00] font-mono tracking-widest overflow-x-auto whitespace-nowrap">
-                  {generateAsciiBar(simulatedValue, customAmount)}
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 font-mono">
-                  <span>[#] HARDWARE MSRP: {formatCurrency(customAmount)}</span>
-                  <span>[|] STOCK ALPHA: +{formatCurrency(simulatedProfit)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-[11px] text-slate-400 mt-4 pt-3 border-t border-[#1f521f]">
-              &gt; Hardware residual value today: ~$0.00 // Stock equity value: {formatCurrency(simulatedValue)}.
-            </div>
+          <div className="text-[11px] text-slate-400 mt-4 flex items-center gap-1.5 pt-3 border-t border-white/5">
+            <HelpCircle className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+            <span>If you kept the phone, hardware residual value today is near $0. The stock investment holds {formatCurrency(simulatedValue)}.</span>
           </div>
         </div>
       </div>
