@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, CheckCircle2, FileSpreadsheet, ShieldAlert, Cpu } from 'lucide-react';
+import { X, CheckCircle2, FileSpreadsheet, ShieldAlert, Cpu, Heart } from 'lucide-react';
 
 interface SteGuideModalProps {
   isOpen: boolean;
@@ -85,6 +85,22 @@ export const SteGuideModal: React.FC<SteGuideModalProps> = ({ isOpen, onClose })
             <p className="text-slate-300">
               The web interface queries financial market APIs for real-time AAPL prices. If the user downloads the Excel workbook, the file contains compatibility formulas with verified offline fallback values.
             </p>
+          </div>
+
+          {/* Section 5: Acknowledgments & Provenance */}
+          <div>
+            <h4 className="font-bold text-white text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
+              <Heart className="w-4 h-4 text-rose-400" />
+              5. Acknowledgments and Authorship
+            </h4>
+            <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2 text-xs">
+              <p className="text-slate-300">
+                • <strong>Original Ideation & Spreadsheet:</strong> Conceived by <strong>Outsourced</strong> (<a href="https://steamcommunity.com/id/Outsourced/" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">Steam Profile</a>).
+              </p>
+              <p className="text-slate-300">
+                • <strong>Software Engineering & Real-Time Sync:</strong> Built by <strong>Aryan Kori</strong> (<a href="https://github.com/aryankori" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">GitHub Profile</a>).
+              </p>
+            </div>
           </div>
         </div>
 
