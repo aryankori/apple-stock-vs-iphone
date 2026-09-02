@@ -31,3 +31,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 .venv/
+
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key

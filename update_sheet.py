@@ -14,8 +14,9 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-DOWNLOAD_PATH = r"C:\Users\aryan\Downloads\outsoucrd apple sheet.xlsx"
+DOWNLOAD_PATH = os.path.expanduser(os.path.join("~", "Downloads", "outsoucrd apple sheet.xlsx"))
 LOCAL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "outsoucrd apple sheet.xlsx"))
+PUBLIC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "public", "outsoucrd apple sheet.xlsx"))
 
 # Historical launch dataset (Model, Release Date YYYY-MM-DD, MSRP USD, Historical Stock Price USD)
 IPHONE_DATASET = [
@@ -231,6 +232,6 @@ def create_or_update_workbook(target_paths, live_price: float):
 if __name__ == "__main__":
     current_price = fetch_live_aapl_price()
     print(f"Real-Time AAPL Stock Price: ${current_price:.2f}")
-    targets = [LOCAL_PATH, DOWNLOAD_PATH]
+    targets = [LOCAL_PATH, PUBLIC_PATH, DOWNLOAD_PATH]
     create_or_update_workbook(targets, current_price)
     print("Excel update completed successfully.")

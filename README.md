@@ -3,6 +3,7 @@
 This project calculates financial returns from Apple stock (AAPL). It compares the retail price of each iPhone model to an equivalent investment in Apple stock on that model's release date.
 
 The project includes two interfaces:
+
 1. A dynamic web dashboard with live market price updates.
 2. A formatted Excel workbook with automatic calculation formulas.
 
@@ -29,6 +30,7 @@ The model uses four primary equations for each iPhone row:
 ## 2. Stock Split Adjustments
 
 Historical share prices use split adjustments. Apple completed two stock splits during the iPhone timeline:
+
 - **June 9, 2014**: 7-for-1 stock split.
 - **August 28, 2020**: 4-for-1 stock split.
 
@@ -80,9 +82,10 @@ uv run --with openpyxl python update_sheet.py
 ```
 
 The script fetches the current AAPL price from Yahoo Finance and updates the workbook at:
-- `outsoucrd apple sheet.xlsx`
-- `public/outsoucrd apple sheet.xlsx`
-- `C:\Users\aryan\Downloads\outsoucrd apple sheet.xlsx`
+
+- `outsoucrd apple sheet.xlsx` (repository root)
+- `public/outsoucrd apple sheet.xlsx` (web download asset)
+- `~/Downloads/outsoucrd apple sheet.xlsx` (local Downloads folder)
 
 ---
 
