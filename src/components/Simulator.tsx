@@ -103,7 +103,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
             >
               {models.map(m => (
                 <option key={m.id} value={m.id} className="bg-[#16161d] text-white">
-                  {m.model} ({m.releaseDate.split('-')[0]}) — MSRP: ${m.modelPrice}
+                  {m.model} ({m.releaseDate.split('-')[0]}), MSRP: ${m.modelPrice}
                 </option>
               ))}
             </select>

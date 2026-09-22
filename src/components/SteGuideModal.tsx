@@ -98,7 +98,7 @@ export const SteGuideModal: React.FC<SteGuideModalProps> = ({ isOpen, onClose })
                 • <strong>Original Ideation & Spreadsheet:</strong> Conceived by <strong>Outsourced</strong> (<a href="https://steamcommunity.com/id/Outsourced/" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">Steam Profile</a>).
               </p>
               <p className="text-slate-300">
-                • <strong>Software Engineering & Real-Time Sync:</strong> Built by <strong>Aryan Kori</strong> (<a href="https://github.com/aryankori" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">GitHub Profile</a>).
+                • <strong>Software Engineering & Real-Time Sync:</strong> Built by <strong>aryankori</strong> (<a href="https://github.com/aryankori" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">GitHub Profile</a>).
               </p>
             </div>
           </div>

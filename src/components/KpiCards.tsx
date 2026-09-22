@@ -23,7 +23,7 @@ export const KpiCards: React.FC<KpiCardsProps> = ({ summary }) => {
             {formatCurrency(summary.totalCost)}
           </div>
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <span>49 iPhone releases (2007–2026)</span>
+            <span>49 iPhone releases (2007-2026)</span>
           </p>
         </div>
         <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-blue-500/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition"></div>

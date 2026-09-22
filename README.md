@@ -92,7 +92,7 @@ The script fetches the current AAPL price from Yahoo Finance and updates the wor
 ## 6. Acknowledgments and Credits
 
 - **Original Ideator & Spreadsheet Creator:** **Outsourced** ([Steam Profile](https://steamcommunity.com/id/Outsourced/)). Special thanks to Outsourced for creating the original spreadsheet concept years ago.
-- **Software Engineer & Real-Time Sync:** **Aryan Kori** ([GitHub Profile](https://github.com/aryankori)). Engineered the full-stack real-time calculation pipeline, responsive web application, and mathematical validation.
+- **Software Engineer & Real-Time Sync:** **aryankori** ([GitHub Profile](https://github.com/aryankori)). Engineered the full-stack real-time calculation pipeline, responsive web application, and mathematical validation.
 
 ---
 
