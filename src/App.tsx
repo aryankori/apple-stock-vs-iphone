@@ -1,146 +1,152 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { IPHONE_DATASET } from './data/iphoneData';
-import { fetchAaplStockQuote } from './services/stockApi';
-import { calculateAllModels, calculatePortfolioSummary } from './utils/calculator';
-import { StockQuote, IPhoneCalculation } from './types';
-import { Header } from './components/Header';
-import { KpiCards } from './components/KpiCards';
-import { Simulator } from './components/Simulator';
-import { RoiChart } from './components/RoiChart';
-import { IPhoneTable } from './components/IPhoneTable';
-import { SteGuideModal } from './components/SteGuideModal';
-import { Footer } from './components/Footer';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { IPHONES } from './data/iphones';
+import { evaluateAll, presets, summarize } from './lib/calc';
+import type { Basis } from './types';
+import { Nav } from './components/Nav';
+import { Hero } from './components/Hero';
+import { PriceChart } from './components/PriceChart';
+import { Calculator } from './components/Calculator';
+import { RankingChart } from './components/RankingChart';
+import { Portfolio } from './components/Portfolio';
+import { DataTable } from './components/DataTable';
+import { Method } from './components/Method';
+import { Section } from './components/ui';
 
-export function App() {
-  const [quote, setQuote] = useState<StockQuote>({
-    symbol: 'AAPL',
-    price: 325.70,
-    change: 0.88,
-    changePercent: 0.27,
-    timestamp: new Date().toISOString(),
-    currency: 'USD',
-    isRealTime: true,
-  });
+const IDS = new Set(IPHONES.map((p) => p.id));
+const DEFAULT_MODEL = IPHONES[0].id;
+/** Until the visitor picks their own, the history builder shows an example upgrade path. */
+const DEFAULT_OWNED = presets(IPHONES).find((p) => p.id === 'every-other')!.ids;
+const sameIds = (a: string[], b: string[]) => a.length === b.length && a.every((id, i) => id === b[i]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
-  const [selectedModelId, setSelectedModelId] = useState<string>('1'); // Default: iPhone 3G
-  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
-
-  const loadStockPrice = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const newQuote = await fetchAaplStockQuote();
-      setQuote(newQuote);
-      setLastRefreshed(new Date());
-    } catch (err) {
-      console.error('Failed to refresh stock quote', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadStockPrice();
-    // Auto refresh every 60 seconds
-    const interval = setInterval(loadStockPrice, 60000);
-    return () => clearInterval(interval);
-  }, [loadStockPrice]);
-
-  // Recalculate all 49 iPhone models dynamically when current AAPL price changes
-  const calculatedModels = useMemo(() => {
-    return calculateAllModels(IPHONE_DATASET, quote.price);
-  }, [quote.price]);
-
-  // Recalculate portfolio summary
-  const summary = useMemo(() => {
-    return calculatePortfolioSummary(calculatedModels);
-  }, [calculatedModels]);
-
-  // Active selected model for simulator
-  const selectedModel = useMemo(() => {
-    return calculatedModels.find(m => m.id === selectedModelId) || calculatedModels[0];
-  }, [calculatedModels, selectedModelId]);
-
-  const handleSelectModel = (model: IPhoneCalculation) => {
-    setSelectedModelId(model.id);
-    // Smooth scroll to simulator on small screens
-    const simElem = document.getElementById('simulator-section');
-    if (simElem && window.innerWidth < 768) {
-      simElem.scrollIntoView({ behavior: 'smooth' });
-    }
+/** App state lives in the query string, so any view can be shared as a link. */
+function readUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const model = params.get('model');
+  const owned = params.has('owned')
+    ? (params.get('owned') ?? '').split(',').filter((id) => IDS.has(id))
+    : DEFAULT_OWNED;
+  return {
+    model: model && IDS.has(model) ? model : DEFAULT_MODEL,
+    owned,
+    basis: (params.get('dividends') === '1' ? 'total' : 'price') as Basis,
   };
-
-  return (
-    <div className="min-h-screen bg-[#08080b] flex flex-col">
-      {/* Header with Live Ticker */}
-      <Header
-        quote={quote}
-        isLoading={isLoading}
-        onRefresh={loadStockPrice}
-        onOpenGuide={() => setIsGuideOpen(true)}
-        lastRefreshed={lastRefreshed}
-      />
-
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Hero Section */}
-        <div className="text-center sm:text-left max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-semibold text-blue-400 mb-3">
-            <span>Hardware vs Capital Allocation Analysis</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            What if you invested in <span className="shimmer-text">Apple Stock</span> instead of buying every iPhone?
-          </h1>
-          <p className="text-sm sm:text-base text-slate-400 mt-3 leading-relaxed">
-            This live dashboard calculates the current value of investing the retail launch price of each iPhone model into Apple stock ($AAPL) on its exact release date.
-          </p>
-        </div>
-
-        {/* Aggregate KPI Summary Cards */}
-        <section aria-label="Portfolio Summary">
-          <KpiCards summary={summary} />
-        </section>
-
-        {/* Simulator Section */}
-        <section id="simulator-section" aria-label="Interactive Simulator">
-          <Simulator
-            models={calculatedModels}
-            selectedModel={selectedModel}
-            onSelectModel={handleSelectModel}
-            currentStockPrice={quote.price}
-          />
-        </section>
-
-        {/* Visual ROI Timeline Chart */}
-        <section aria-label="Timeline and Return Chart">
-          <RoiChart
-            models={calculatedModels}
-            onSelectModel={handleSelectModel}
-            selectedModelId={selectedModelId}
-          />
-        </section>
-
-        {/* Complete iPhone Analysis Table */}
-        <section aria-label="Complete iPhone Ledger">
-          <IPhoneTable
-            models={calculatedModels}
-            onSelectModel={handleSelectModel}
-            selectedModelId={selectedModelId}
-          />
-        </section>
-      </main>
-
-      {/* Technical Documentation Modal (ASD-STE100) */}
-      <SteGuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
-      />
-
-      {/* Footer */}
-      <Footer />
-    </div>
-  );
 }
 
-export default App;
+export default function App() {
+  const initial = useMemo(readUrl, []);
+  const [selectedId, setSelectedId] = useState(initial.model);
+  const [owned, setOwned] = useState<string[]>(initial.owned);
+  const [basis, setBasis] = useState<Basis>(initial.basis);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedId !== DEFAULT_MODEL) params.set('model', selectedId);
+    if (!sameIds(owned, DEFAULT_OWNED)) params.set('owned', owned.join(','));
+    if (basis === 'total') params.set('dividends', '1');
+    const qs = params.toString();
+    const url = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`;
+    window.history.replaceState(null, '', url);
+  }, [selectedId, owned, basis]);
+
+  const holdings = useMemo(() => evaluateAll(IPHONES, basis), [basis]);
+  const summary = useMemo(() => summarize(holdings), [holdings]);
+  const selected = holdings.find((h) => h.id === selectedId) ?? holdings[0];
+  const flagship = useMemo(
+    () =>
+      [...holdings].sort((a, b) => b.releaseDate.localeCompare(a.releaseDate) || b.msrp - a.msrp)[0],
+    [holdings],
+  );
+
+  const dividends = basis === 'total';
+  const setDividends = (on: boolean) => setBasis(on ? 'total' : 'price');
+
+  /** Select a phone from anywhere on the page and bring the calculator into view. */
+  const openInCalculator = useCallback((id: string) => {
+    setSelectedId(id);
+    document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
+  return (
+    <>
+      <a
+        href="#chart"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-full focus:bg-surface focus:px-4 focus:py-2"
+      >
+        Skip to content
+      </a>
+      <Nav dividends={dividends} onDividends={setDividends} />
+      <main>
+        <Hero summary={summary} holdings={holdings} dividends={dividends} onDividends={setDividends} />
+
+        <Section
+          id="chart"
+          eyebrow="The stock behind the phones"
+          title="Apple’s share price, with every iPhone launch."
+          lede="Each orange dot is a day new iPhones went on sale. Hover or tap a dot to see which models launched, and click it to open that phone in the calculator. The log scale shows equal percentage moves as equal heights."
+        >
+          <PriceChart holdings={holdings} selectedId={selected.id} onSelect={openInCalculator} />
+        </Section>
+
+        <Section
+          id="calculator"
+          eyebrow="Calculator"
+          title="Pick an iPhone. See what it would be worth."
+          lede="Choose a model, or drag the slider through time. The phone on the right charts that phone’s launch price in AAPL from its launch day to today."
+        >
+          <Calculator
+            holdings={holdings}
+            selected={selected}
+            onSelect={setSelectedId}
+            basis={basis}
+            flagship={flagship}
+          />
+        </Section>
+
+        <Section
+          id="rankings"
+          eyebrow="Every model, side by side"
+          title="The older the phone, the bigger the win."
+          lede="Each column is one iPhone, in release order. Early phones had years of compounding. Recent phones have had little time to grow. Click a column to open it in the calculator."
+        >
+          <RankingChart holdings={holdings} selectedId={selected.id} onSelect={openInCalculator} />
+        </Section>
+
+        <Section
+          id="yours"
+          eyebrow="Your iPhone history"
+          title="What did your upgrades cost you?"
+          lede="Select the iPhones you have owned. The chart follows the money from your first phone to today, next to what you spent on the phones."
+        >
+          <Portfolio holdings={holdings} owned={owned} onChange={setOwned} basis={basis} />
+        </Section>
+
+        <Section
+          id="data"
+          eyebrow="All the numbers"
+          title="The full table."
+          lede="Sort by any column, filter by model or year, and download the data. Select a row to open it in the calculator."
+        >
+          <DataTable holdings={holdings} selectedId={selected.id} onSelect={openInCalculator} basis={basis} />
+        </Section>
+
+        <Section id="method" eyebrow="Methodology" title="How the numbers work.">
+          <Method />
+        </Section>
+      </main>
+
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-page flex-col gap-4 px-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p>Not investment advice. Past returns do not predict future returns.</p>
+          <div className="flex items-center gap-5">
+            <a className="hover:text-ink" href="https://github.com/aryankori/apple-stock-vs-iphone" target="_blank" rel="noreferrer">
+              Source on GitHub
+            </a>
+            <a className="hover:text-ink" href="https://steamcommunity.com/id/Outsourced/" target="_blank" rel="noreferrer">
+              Original idea: Outsourced
+            </a>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
+}
