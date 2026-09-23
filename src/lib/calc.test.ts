@@ -9,6 +9,14 @@ describe('iPhone dataset', () => {
     const dates = IPHONES.map((p) => p.releaseDate);
     expect([...dates].sort()).toEqual(dates);
   });
+
+  it('stores launch closes that match the price history within 0.5%', () => {
+    for (const p of IPHONES) {
+      const close = CLOSE[indexOnOrBefore(p.releaseDate)];
+      const drift = Math.abs(p.launchClose / close - 1);
+      expect(drift, `${p.model} on ${p.releaseDate}`).toBeLessThan(0.005);
+    }
+  });
 });
 
 describe('price history', () => {
