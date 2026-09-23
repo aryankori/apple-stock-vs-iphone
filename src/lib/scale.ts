@@ -35,7 +35,7 @@ function niceStep(span: number, count: number) {
   const raw = span / Math.max(1, count);
   const mag = 10 ** Math.floor(Math.log10(raw));
   const norm = raw / mag;
-  const step = norm >= 5 ? 10 : norm >= 2 ? 5 : norm >= 1 ? 2 : 1;
+  const step = norm > 5 ? 10 : norm > 2 ? 5 : norm > 1 ? 2 : 1;
   return step * mag;
 }
 

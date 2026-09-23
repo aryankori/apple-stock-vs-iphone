@@ -43,7 +43,8 @@ export default function App() {
     if (selectedId !== DEFAULT_MODEL) params.set('model', selectedId);
     if (!sameIds(owned, DEFAULT_OWNED)) params.set('owned', owned.join(','));
     if (basis === 'total') params.set('dividends', '1');
-    const qs = params.toString();
+    // Commas are legal in a query string; keep the id list readable.
+    const qs = params.toString().replace(/%2C/g, ',');
     const url = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`;
     window.history.replaceState(null, '', url);
   }, [selectedId, owned, basis]);
@@ -91,7 +92,7 @@ export default function App() {
           id="calculator"
           eyebrow="Calculator"
           title="Pick an iPhone. See what it would be worth."
-          lede="Choose a model, or drag the slider through time. The phone on the right charts that phone’s launch price in AAPL from its launch day to today."
+          lede="Choose a model, or drag the slider through time. The phone on the right charts that phone’s launch price in AAPL from its launch day to today. Or switch to any amount on any date since 2007."
         >
           <Calculator
             holdings={holdings}

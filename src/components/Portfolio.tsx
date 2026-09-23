@@ -119,7 +119,7 @@ export function Portfolio({ holdings, owned, onChange, basis }: Props) {
           </div>
         ) : (
           <>
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-5">
               <Stat label={`${summary.count} iPhone${summary.count === 1 ? '' : 's'}`} value={money(summary.spent)} detail="spent" />
               <Stat label="In AAPL instead" value={money(summary.value)} detail="worth today" />
               <Stat

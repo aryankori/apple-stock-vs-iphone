@@ -12,13 +12,15 @@ interface Props {
   /** Accessible description of what the chart shows. */
   label: string;
   compact?: boolean;
+  /** Tooltip label for the orange money-spent line. */
+  spentLabel?: string;
 }
 
 /**
  * Value of the AAPL position over time (blue line with a wash) next to the
  * running total spent on iPhones (orange step line), on one dollar axis.
  */
-export function GrowthChart({ points, height, label, compact }: Props) {
+export function GrowthChart({ points, height, label, compact, spentLabel = 'on iPhones' }: Props) {
   const [ref, width] = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
 
@@ -34,7 +36,7 @@ export function GrowthChart({ points, height, label, compact }: Props) {
     const t1 = TIMES[points[points.length - 1].i];
     const max = points.reduce((m, p) => Math.max(m, p.value, p.spent), 0);
     const x = linear([t0, t1], [0, innerW]);
-    const y = linear([0, niceMax(max * 1.04, 4)], [innerH, 0]);
+    const y = linear([0, niceMax(max * 1.04, 5)], [innerH, 0]);
 
     const stride = Math.max(1, Math.floor(points.length / (innerW * 2)));
     const xs: number[] = [];
@@ -72,7 +74,7 @@ export function GrowthChart({ points, height, label, compact }: Props) {
     for (let yr = y0; yr <= y1; yr += step) xTicks.push(yr);
     if (years < 2) xTicks.length = 0;
 
-    return { x, y, area, valueLine, spentLine: stepPath(sx, sy), xTicks, yTicks: y.ticks(4) };
+    return { x, y, area, valueLine, spentLine: stepPath(sx, sy), xTicks, yTicks: y.ticks(5) };
   }, [points, innerW, innerH, compact]);
 
   const onPointerMove = (e: PointerEvent<SVGRectElement>) => {
@@ -187,7 +189,7 @@ export function GrowthChart({ points, height, label, compact }: Props) {
           <p className="mt-0.5 flex items-center gap-2">
             <LineKey color="var(--cost)" />
             <span className="font-semibold text-ink">{money(hp.spent)}</span>
-            <span className="text-muted">on iPhones</span>
+            <span className="text-muted">{spentLabel}</span>
           </p>
         </ChartTooltip>
       )}
